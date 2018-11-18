@@ -1,0 +1,17 @@
+.classpath
+.project
+.settings/
+/target/
+*.iml
+*.gem
+Gemfile.lock
+Gemfile.bak
+.bundle
+.idea/vcs.xml
+.idea/.name
+.idea/encodings.xml
+.idea/logstash-plugins.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/
