@@ -1,10 +1,22 @@
+####背景
+- tikv在insert并发写入的时候可能存在着一致性的问题，例如insert的数据已经响应commited了但仍旧不可见，或者不同节点同一个表的字段不一致等，所以需要相应的工具来验证一致性问题。
+
 ####设计
-- 貌似是要实现类似jepsen的功能，时间感觉不够用jepsen还没看懂..先想到哪处理到哪..目前的逻辑较为简单。
-- 初始化阶段，创建表，表语句存入log。log是个内存数组。
-- 在执行阶段，开2个线程池，分别并发请求随机生成的insert和ddl。执行的语句及执行的结果或异常信息存入log。
-- 在验证阶段，遍历log，找出insert语句。
-	- 如果insert成功，根据主键查数据是否存在，存在则表示验证通过。
-	- 如果insert失败
-		- 如果是类型冲突，则从当前位置回溯log，直到发现修改该字段的ddl或者create_table语句，判断类型是否与异常信息所表示的类型一致，一致则表示验证通过。
-		- 如果是字段不存在，则从当前位置回溯log，直到发现该字段的ddl或者create_table语句，发现ddl的删除语句或者没有关于该字段ddl和create_table语句，则表示验证通过。
-		- 如果是字段数值超出范围，则从当前位置回溯log，直到发现该字段的ddl或者create_table语句，如果insert的字段的值的确超出ddl或者ceate_table中的该字段的类型的范围，那验证通过。
+- 表初始化，记录schema结构及当前时间timestamp到schemaRecords。
+- 对同一个表并发insert及ddl，其语句随机。
+- ddl成功时，记录新schema结构及当前时间timestamp到schemaRecords。
+- 每次insert记录开始时间startTimestamp和endTimestamp
+- insert成功时，通过id查询db 数据是否存在。
+	- 存在，说明数据写入成功。
+	- 不存在，说明db存在数据不一致问题。
+- insert失败时，从schemaRecords中，以小于startTimestamp的最近timestamp开始，以小于等于endTimestamp的timestamp结束，取出当中的多个schema，以失败的insert语句作异常验证。
+	- 如果存在至少一个schema的结构会导致insert语句抛出指定的异常，则认为数据的确没有写入db。
+	- 否则认为db存在数据不一致问题。
+
+####进度
+- 开发
+	- 基础搭建。1d DONE
+	- 随机insert。0.5d DONE
+	- 随机ddl。1d DOING
+	- insert校验。1d DOING
+- 测试 1d TODO
