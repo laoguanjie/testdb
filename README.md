@@ -1,7 +1,7 @@
-####背景
+#### 背景
 - tikv在insert并发写入的时候可能存在着一致性的问题，例如insert的数据已经响应commited了但仍旧不可见，或者不同节点同一个表的字段不一致等，所以需要相应的工具来验证一致性问题。
 
-####设计
+#### 设计
 - 表初始化，记录schema结构及当前时间timestamp到schemaRecords。
 - 对同一个表并发insert及ddl，其语句随机。
 - ddl成功时，记录新schema结构及当前时间timestamp到schemaRecords。
@@ -13,7 +13,7 @@
 	- 如果存在至少一个schema的结构会导致insert语句抛出指定的异常，则认为数据的确没有写入db。
 	- 否则认为db存在数据不一致问题。
 
-####进度
+#### 进度
 - 开发
 	- 基础搭建。1d DONE
 	- 随机insert。0.5d DONE
