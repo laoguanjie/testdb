@@ -1,0 +1,10 @@
+base:
+  ddlThreads: 100
+  insertThreads: 100
+  executeSeconds: 10
+database:
+  jdbcUrl: "jdbc:mysql://localhost:3306/test"
+  username: "root"
+  password: "dongwei123"
+  tableName: "testdb"
+  columnNames: ["name","type","status"]

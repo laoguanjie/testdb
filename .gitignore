@@ -1,7 +1,6 @@
 .classpath
 .project
 .settings/
-/target/
 *.iml
 *.gem
 Gemfile.lock
@@ -15,3 +14,4 @@ Gemfile.bak
 .idea/modules.xml
 .idea/workspace.xml
 .idea/
+/target/

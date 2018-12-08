@@ -1,8 +1,11 @@
 package test.db;
 
+import java.security.SecureRandom;
 import java.util.concurrent.ThreadLocalRandom;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+
+import javafx.scene.control.TextInputDialog;
 
 public enum ColumnType {
 	INT("int(11)") {
@@ -45,7 +48,7 @@ public enum ColumnType {
 	DATETIME("datetime") {
 		@Override
 		public String randomValue() {
-			return new LocalDateTime(ThreadLocalRandom.current().nextLong(Long.MAX_VALUE / 2)).toString();
+			return quoted(new LocalDateTime(ThreadLocalRandom.current().nextLong(Long.MAX_VALUE / 2)).toString("yyyy-MM-dd HH:mm:ss"));
 		}
 	},
 	CHAR("char(255)") {
@@ -64,15 +67,15 @@ public enum ColumnType {
 	public abstract String randomValue();
 
 	private static String quoted(String value) {
-		return "'" + value + "'";
+		return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'";
 	}
 
 	private static String randomString() {
-		int len = ThreadLocalRandom.current().nextInt(65535);
+		int len = ThreadLocalRandom.current().nextInt(20);
 
 		byte[] b = new byte[len];
 		for (int i = 0; i < b.length; i++) {
-			b[i] = (byte) ((ThreadLocalRandom.current().nextInt(127) + 1) & 0x7f);
+			b[i] = (byte) ((ThreadLocalRandom.current().nextInt(20) + 48) & 0x7f);
 		}
 
 		return new String(b);
@@ -84,6 +87,16 @@ public enum ColumnType {
 
 	public void setDefaultName(String defaultName) {
 		this.defaultName = defaultName;
+	}
+	
+	public static ColumnType findByName(String name) {
+		for(ColumnType c : values()) {
+			if(c.getDefaultName().equals(name)) {
+				return c;
+			}
+		}
+		
+		throw new TestDBException("findByName should not run here");
 	}
 	
 }

@@ -31,7 +31,8 @@ public class Session {
 				conn = DriverManager.getConnection(jdbcUrl, username, password);
 			}
 			
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new TestDBException(e);
 		}
 	}
 	

@@ -11,9 +11,9 @@ public class RandomSql {
 	
 	private final List<String> columnList;
 
-	private final String tableTemplate = "create table if not exists {table} (`id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id', {columns} PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+	private final String tableTemplate = "create table {table} (`id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增id', {columns} PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 	
-	private final String insertTemplate = "insert into {table} ({keys}) values {values}";
+	private final String insertTemplate = "insert into {table} ({keys}) values ({values})";
 	
 	private final String findByIdTemplate = "select id from {table} where id = {id}";
 	
@@ -33,9 +33,9 @@ public class RandomSql {
 		return kt;
 	}
 
-	public Sql createTable() {
+	public CreateTableSql createTable() {
 		
-		Sql sql = new Sql();
+		CreateTableSql sql = new CreateTableSql();
 
 		Map<String, String> kt = randomKT();
 		StringBuilder columnsBuilder = new StringBuilder("");
@@ -43,6 +43,9 @@ public class RandomSql {
 			sql.getVariables().put(entry.getKey(), entry.getValue());
 			String column = "`" + entry.getKey() + "` " + entry.getValue() + ",";
 			columnsBuilder.append(column);
+			if(System.currentTimeMillis()%3 == 1) {
+				break;
+			}
 		}
 
 		String query = tableTemplate.replace("{table}", tableName).replace("{columns}", columnsBuilder.toString());

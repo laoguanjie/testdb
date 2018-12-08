@@ -6,11 +6,15 @@ import lombok.Data;
 
 @Data
 public class Schema {
+	
+	private volatile boolean ready = false;
+	
+	private DDLSql sql;
 
 	// columnName -> columnType
 	private Map<String, String> columns = new ConcurrentHashMap<>();
 	
-	// indexName -> columnName
+	// indexName(columnName + "_id") -> columnName
 	private Map<String, String> indices = new ConcurrentHashMap<>();
 	
 	public Schema copy() {

@@ -1,5 +1,6 @@
 package test.db;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,8 +36,8 @@ public class LruCache<K,V> {
         map.remove(key);
     }
 
-    public synchronized Set<Map.Entry<K, V>> getAll() {
-        return map.entrySet();
+    public synchronized Collection<V> values() {
+        return map.values();
     }
 
     public synchronized int size() {
@@ -47,7 +48,7 @@ public class LruCache<K,V> {
         map.clear();
     }
     
-    public Set<K> keySet() {
+    public synchronized Set<K> keySet() {
     		return map.keySet();
     }
 
