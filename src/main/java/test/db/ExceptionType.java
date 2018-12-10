@@ -31,7 +31,39 @@ public enum ExceptionType {
 			return false;
 		}
 	},
-	INCORRECT_DATETIME(Pattern.compile("^Data truncation: Incorrect datetime value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
+	UNKNOW_COLUMN(Pattern.compile("unknown column (?<columnName>\\w+)")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			String columnName = namedGroups.get("columnName");
+
+			for (Schema s : latestSchemaList) {
+				if(s.getColumns() == null) {
+					logger.error("columns is null, schema={}",s);
+				}
+				if (!s.getColumns().containsKey(columnName)) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+	},
+	INCORRECT_TIME_FORMAT(Pattern.compile("Data truncation: invalid time format: '(?<val>.*)'")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			String val = namedGroups.get("val");
+			
+			if(val.startsWith("{") && val.endsWith("}")) {
+				//TODO
+				return true;
+			} else {
+				return INCORRECT_DATETIME.verify(sql, latestSchemaList, namedGroups, schemaLine);
+			}
+		}
+	},
+	INCORRECT_DATETIME(Pattern.compile("^Data truncation: Incorrect datetime value: '(?<val>.*)'")) {
 		@Override
 		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups, SchemaLine schemaLine) {
 			String val = namedGroups.get("val");
@@ -66,6 +98,18 @@ public enum ExceptionType {
 			return false;
 		}
 	},
+	CONVERT_TO_DATE_ERROR(Pattern.compile("^cannot convert datum from decimal to type date")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			for(String val : sql.getVariables().values()) {
+				if(!val.startsWith("'") || !val.endsWith("'")) {
+					return true;
+				}
+			}
+			return false;
+		}
+	},
 	INCORRECT_FLOAT(Pattern.compile("^Incorrect float value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
 		@Override
 		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
@@ -79,7 +123,33 @@ public enum ExceptionType {
 			return false;
 		}
 	},
-	INCORRECT_INTEGER(Pattern.compile("^Incorrect integer value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
+	INCORRECT_DOUBLE(Pattern.compile("^Incorrect double value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			String val = namedGroups.get("val");
+			try {
+				Float.valueOf(val);
+			} catch (Exception e) {
+				return true;
+			}
+			return false;
+		}
+	},
+	INCORRECT_BIGINT(Pattern.compile("^Incorrect bigint value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			String val = namedGroups.get("val");
+			try {
+				Long.valueOf(val);
+			} catch (Exception e) {
+				return true;
+			}
+			return false;
+		}
+	},
+	INCORRECT_INTEGER(Pattern.compile("^Incorrect int value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
 		@Override
 		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups, SchemaLine schemaLine) {
 			String val = namedGroups.get("val");

@@ -18,7 +18,7 @@ public class Config {
 		private String username = "root";
 		private String password = "123";
 		private String tableName = "testdb";
-		private List<String> columnNames = Arrays.asList("name","type","time");
+		private List<String> columnNames = Arrays.asList("name1","type1","time1");
 		
 	}
 
