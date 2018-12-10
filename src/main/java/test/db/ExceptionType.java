@@ -66,6 +66,19 @@ public enum ExceptionType {
 			return false;
 		}
 	},
+	INCORRECT_FLOAT(Pattern.compile("^Incorrect float value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
+		@Override
+		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups,
+				SchemaLine schemaLine) {
+			String val = namedGroups.get("val");
+			try {
+				Float.valueOf(val);
+			} catch (Exception e) {
+				return true;
+			}
+			return false;
+		}
+	},
 	INCORRECT_INTEGER(Pattern.compile("^Incorrect integer value: '(?<val>.*)' for column '(?<columnName>.*)'")) {
 		@Override
 		public boolean verify(Sql sql, Collection<Schema> latestSchemaList, Map<String, String> namedGroups, SchemaLine schemaLine) {

@@ -14,9 +14,9 @@ public class Config {
 	
 	@Data
 	public static class Database {
-		private String jdbcUrl = "jdbc:mysql://localhost:3306/test";
+		private String jdbcUrl = "jdbc:mysql://localhost:4000/test?useUnicode=true&characterEncoding=UTF-8";
 		private String username = "root";
-		private String password = "dongwei123";
+		private String password = "123";
 		private String tableName = "testdb";
 		private List<String> columnNames = Arrays.asList("name","type","time");
 		
