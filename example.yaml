@@ -4,7 +4,7 @@ base:
   executeSeconds: 10
 database:
   jdbcUrl: "jdbc:mysql://localhost:3306/test"
-  username: "root"
-  password: "dongwei123"
+  username: "admin"
+  password: "admin"
   tableName: "testdb"
   columnNames: ["name","type","status"]
